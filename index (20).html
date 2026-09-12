@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>KaaosCup Tier List</title>
+<style>
+@font-face{font-family:'Kirana';src:url('kirana-regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Kirana';src:url('kirana-bold.ttf') format('truetype');font-weight:700;font-display:swap}
+:root{--accent:#ffab53;--text:#f5efe2;--muted:#a09282;--label:#c5c0b5;--panel:rgba(18,15,10,.94);--border:rgba(255,171,83,.18);--pool-bg:rgba(9,7,5,.86)}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;background:#0c0a07}
+body{font-family:'Kirana',system-ui,sans-serif;font-weight:400;color:var(--text);position:relative;background:radial-gradient(ellipse 1400px 700px at 50% -5%,rgba(255,171,83,.07),transparent 60%),radial-gradient(ellipse 800px 500px at 10% 110%,rgba(255,120,40,.05),transparent 55%),radial-gradient(ellipse 800px 500px at 90% 110%,rgba(255,171,83,.04),transparent 55%),linear-gradient(170deg,#1a160f 0%,#100e0a 50%,#0c0a07 100%)}
+body:before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(135deg,rgba(255,255,255,.011) 0 1px,transparent 1px 14px),repeating-linear-gradient(45deg,rgba(0,0,0,.055) 0 1px,transparent 1px 14px)}
+body:after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 52%,rgba(0,0,0,.5) 100%)}
+#embers{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+header{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:4;text-align:center}
+.logo-img{height:92px;width:auto;display:block;margin:0 auto;filter:drop-shadow(0 0 18px rgba(255,171,83,.4))}
+.fallback-logo{display:none;font-size:34px;letter-spacing:.12em;font-weight:700;color:var(--accent);padding-top:18px}
+.title{position:absolute;top:18px;right:14px;z-index:4;text-align:right;line-height:1.15}
+.title .big{font-size:clamp(18px,1.45vw,28px);font-weight:700;letter-spacing:.08em;color:#ede4d3;text-shadow:0 0 18px rgba(255,171,83,.25)}
+.title .small{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);opacity:.8;margin-top:2px}
+.toolbar{position:absolute;left:0;top:0;z-index:7;display:flex;gap:7px;padding:12px 0 0 0}
+.toolbar button{height:34px;padding:0 14px;border:1px solid rgba(255,171,83,.35);background:rgba(10,8,5,.82);color:var(--muted);font:700 10px 'Kirana',system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.toolbar button:hover{border-color:var(--accent);color:var(--text);background:rgba(255,171,83,.08)}
+.toolbar .division.active{border-color:var(--accent);background:rgba(255,171,83,.15);color:var(--accent);box-shadow:0 0 14px rgba(255,171,83,.08)}
+.toolbar .reset{margin-left:7px;color:#887e70}
+.board{position:absolute;z-index:3;left:0;right:0;top:112px;bottom:226px;display:grid;grid-template-rows:repeat(5,1fr);gap:7px}
+.tier-row{display:grid;grid-template-columns:122px 1fr;gap:7px;min-height:0}
+.tier-label{height:100%;border:1px solid rgba(255,171,83,.30);background:linear-gradient(160deg,rgba(255,171,83,.12),rgba(255,171,83,.03));display:flex;align-items:center;justify-content:center;font-size:clamp(32px,2.5vw,48px);font-weight:700;letter-spacing:.04em;text-shadow:0 0 18px rgba(255,171,83,.18);cursor:pointer;transition:.12s}
+.tier-label:hover,.tier-row.drop-active .tier-label{border-color:var(--accent);background:linear-gradient(160deg,rgba(255,171,83,.20),rgba(255,171,83,.055))}
+.tier-label .suffix{font-size:11px;letter-spacing:.16em;margin-left:5px;margin-top:14px;color:var(--label)}
+.cards{display:flex;gap:6px;height:100%;min-width:0;align-items:stretch;padding:0;transition:.12s;border:1px solid transparent}
+.tier-row.drop-active .cards{border-color:rgba(255,171,83,.42);background:rgba(255,171,83,.025)}
+.team-card{flex:1 1 250px;min-width:130px;max-width:340px;background:var(--panel);border:1px solid var(--border);position:relative;overflow:hidden;padding:9px 10px 8px 15px;box-shadow:inset 0 0 30px rgba(255,171,83,.018);cursor:grab;transition:transform .12s,border-color .12s,box-shadow .12s,opacity .12s;display:flex;flex-direction:column}
+.team-card:before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--accent);opacity:.72;box-shadow:0 0 12px rgba(255,171,83,.25)}
+.team-card:hover{border-color:rgba(255,171,83,.48);box-shadow:0 0 16px rgba(255,171,83,.06),inset 0 0 30px rgba(255,171,83,.025)}
+.team-card.dragging{opacity:.42;transform:scale(.985)}
+.team-card.selected,.pool-team.selected{border-color:var(--accent)!important;box-shadow:0 0 18px rgba(255,171,83,.18)!important}
+.team-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:6px;flex:0 0 auto}
+.team-name{font-size:clamp(12px,.88vw,17px);font-weight:700;letter-spacing:.045em;text-transform:uppercase;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.avg{font-size:9px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;padding-top:2px}
+.players{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly;align-items:stretch;gap:0}
+.player{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:clamp(11px,.72vw,14px);line-height:1.05;letter-spacing:.02em;color:var(--muted);white-space:nowrap;min-height:0}
+.player strong{font-weight:700;color:#e3d9ca;overflow:hidden;text-overflow:ellipsis}.player .mmr{color:var(--accent);margin-left:auto;font-weight:700;font-size:.94em}
+.tier-S .tier-label{color:#ffd66b}.tier-A .tier-label{color:#ffab53}.tier-B .tier-label{color:#d8bc91}.tier-C .tier-label{color:#a99b87}.tier-D .tier-label{color:#7e7365}
+.pool-wrap{position:absolute;left:0;right:0;bottom:0;height:216px;z-index:5;border-top:1px solid rgba(255,171,83,.26);background:var(--pool-bg);box-shadow:inset 0 0 28px rgba(255,171,83,.018);padding:30px 8px 7px}
+.pool-title{position:absolute;left:8px;top:8px;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.team-pool{height:100%;display:flex;align-content:stretch;align-items:stretch;flex-wrap:wrap;gap:5px;overflow:auto;transition:.12s}
+.pool-wrap.drop-active{border-color:var(--accent);background:rgba(255,171,83,.045)}
+.pool-team{min-height:84px;min-width:205px;max-width:310px;flex:1 1 275px;border:1px solid var(--border);background:rgba(18,15,10,.94);padding:7px 9px 6px 13px;position:relative;cursor:grab;overflow:hidden;transition:.12s;display:flex;flex-direction:column}
+.pool-team:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#5a5248}.pool-team:hover{border-color:rgba(255,171,83,.48)}
+.pool-team .pool-head{display:flex;align-items:flex-start;justify-content:space-between;gap:7px;margin-bottom:5px;flex:0 0 auto}
+.pool-team .pool-name{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#e3d9ca}
+.pool-team .pool-avg{font-size:8px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;padding-top:1px}
+.pool-team .pool-players{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;column-gap:12px;row-gap:1px;align-items:center}
+.pool-team .pool-player{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:10px;line-height:1.05;letter-spacing:.01em;color:var(--muted);white-space:nowrap;min-width:0}
+.pool-team .pool-player strong{font-weight:700;color:#ddd3c5;overflow:hidden;text-overflow:ellipsis}.pool-team .pool-player .mmr{color:var(--accent);margin-left:auto;font-weight:700;font-size:.95em}
+.empty-hint{height:100%;width:100%;display:flex;align-items:center;justify-content:center;color:#403a32;font-size:10px;letter-spacing:.14em;text-transform:uppercase;pointer-events:none}
+@media (max-width:1100px){.title .small{display:none}.tier-row{grid-template-columns:92px 1fr}.tier-label .suffix{display:none}.team-card{min-width:112px;padding-left:12px}.pool-team{min-width:180px}}
+</style>
+</head>
+<body>
+<canvas id="embers"></canvas>
+<div class="toolbar">
+  <button class="division active" id="div1Btn" type="button">Division 1</button>
+  <button class="division" id="div2Btn" type="button">Division 2</button>
+  <button class="reset" id="resetBtn" type="button">Reset all to pool</button>
+</div>
+<div class="title"><div class="big" id="pageTitle">KAAOSCUP DIV 1 TIER LIST</div><div class="small">KAAOSLIIGA.FI</div></div>
+<header><img class="logo-img" src="KAAOS-2026-GLOW.png" alt="KAAOSCUP" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="fallback-logo">KAAOSCUP</div></header>
+<div class="board">
+  <div class="tier-row tier-S" data-tier="S"><div class="tier-label" data-tier-click="S">S<span class="suffix">TIER</span></div><div class="cards" data-dropzone="S"></div></div>
+  <div class="tier-row tier-A" data-tier="A"><div class="tier-label" data-tier-click="A">A<span class="suffix">TIER</span></div><div class="cards" data-dropzone="A"></div></div>
+  <div class="tier-row tier-B" data-tier="B"><div class="tier-label" data-tier-click="B">B<span class="suffix">TIER</span></div><div class="cards" data-dropzone="B"></div></div>
+  <div class="tier-row tier-C" data-tier="C"><div class="tier-label" data-tier-click="C">C<span class="suffix">TIER</span></div><div class="cards" data-dropzone="C"></div></div>
+  <div class="tier-row tier-D" data-tier="D"><div class="tier-label" data-tier-click="D">D<span class="suffix">TIER</span></div><div class="cards" data-dropzone="D"></div></div>
+</div>
+<div class="pool-wrap" data-dropzone="pool"><div class="pool-title">TEAM POOL <span id="poolCount"></span></div><div class="team-pool" id="teamPool"></div></div>
+<script>
+const DIVISIONS={
+  div1:{title:'KAAOSCUP DIV 1 TIER LIST',store:'kaaoscup-div1-interactive-tierlist-v2',teams:[{"id": "t0", "name": "en tiiä", "avg": 6340, "players": [{"name": "white monster", "mmr": 8750}, {"name": "jungg", "mmr": 8000}, {"name": "Kaljami", "mmr": 8500}, {"name": "Pipo", "mmr": 3202}, {"name": "Hepiisi", "mmr": 3250}]}, {"id": "t1", "name": "HEFTY PELTI", "avg": 6374, "players": [{"name": "Sumbo", "mmr": 6500}, {"name": "Vata56", "mmr": 7000}, {"name": "ilbert", "mmr": 9500}, {"name": "Kefu", "mmr": 6000}, {"name": "Miukkari", "mmr": 2868}]}, {"id": "t2", "name": "+-0", "avg": 6381, "players": [{"name": "moilis", "mmr": 6000}, {"name": "Frop", "mmr": 8500}, {"name": "sorca", "mmr": 6500}, {"name": "Jujubear", "mmr": 4156}, {"name": "HKNST", "mmr": 6750}]}, {"id": "t3", "name": "Mayzin stäkki", "avg": 6235, "players": [{"name": "Alluminati", "mmr": 6000}, {"name": "hjalluboi", "mmr": 8500}, {"name": "Mayz", "mmr": 2675}, {"name": "Shift", "mmr": 7500}, {"name": "mayhem092", "mmr": 6500}]}, {"id": "t4", "name": "Tung Tung Tung Sahur Suosittelee", "avg": 6350, "players": [{"name": "Notah", "mmr": 6750}, {"name": "Quiqa", "mmr": 9000}, {"name": "Hasselbergi", "mmr": 5000}, {"name": "Nukkumatti", "mmr": 10000}, {"name": "yyper", "mmr": 1000}]}, {"id": "t5", "name": "Mongoolin kosto", "avg": 6384, "players": [{"name": "kammotus", "mmr": 9000}, {"name": "balll", "mmr": 9000}, {"name": "censis", "mmr": 5000}, {"name": "soymaxxer", "mmr": 4000}, {"name": "kylmälehto", "mmr": 4920}]}, {"id": "t6", "name": "seppo322", "avg": 6350, "players": [{"name": "fiji", "mmr": 9000}, {"name": "noertti", "mmr": 8000}, {"name": "BigGoose", "mmr": 8250}, {"name": "Kahvipannu", "mmr": 3750}, {"name": "Taitaja", "mmr": 2750}]}, {"id": "t7", "name": "No Phantom Lancer", "avg": 6390, "players": [{"name": "VesiNokkaEläin", "mmr": 8500}, {"name": "Asplo", "mmr": 7500}, {"name": "SaunaSauli", "mmr": 6000}, {"name": "akabane", "mmr": 2805}, {"name": "TPJR", "mmr": 7000}, {"name": "Skottilainen hiusraja", "mmr": 2949}]}, {"id": "t8", "name": "TurboKurkku", "avg": 6110, "players": [{"name": "KurkkuMopo", "mmr": 5750}, {"name": "HitPumpkin", "mmr": 7000}, {"name": "Suskatti", "mmr": 7000}, {"name": "LaLa", "mmr": 6500}, {"name": "Saclye", "mmr": 4300}]}, {"id": "t9", "name": "Jyrin kilpa-autotalli", "avg": 6397, "players": [{"name": "topita", "mmr": 10500}, {"name": "amiraali", "mmr": 4500}, {"name": "pena", "mmr": 8500}, {"name": "bonham", "mmr": 6000}, {"name": "snue", "mmr": 2483}]}, {"id": "t10", "name": "TUHKALUUKKU", "avg": 6340, "players": [{"name": "Kembey", "mmr": 3950}, {"name": "Harzza", "mmr": 4500}, {"name": "Fuzer", "mmr": 6750}, {"name": "Balzu", "mmr": 7000}, {"name": "Mumu", "mmr": 9500}]}, {"id": "t11", "name": "Do it for Kukko Pärssinen", "avg": 6164, "players": [{"name": "Mindcrack184", "mmr": 5750}, {"name": "Womber", "mmr": 7500}, {"name": "KPT", "mmr": 3818}, {"name": "Ponskii", "mmr": 6000}, {"name": "Nightrain", "mmr": 7750}]}]},
+  div2:{title:'KAAOSCUP DIV 2 TIER LIST',store:'kaaoscup-div2-interactive-tierlist-v2',teams:[{"id": "t0", "name": "LPH-VOIDE", "avg": 4800, "players": [{"name": "Seinis", "mmr": 5434}, {"name": "Muffinssi", "mmr": 4064}, {"name": "Zonneb", "mmr": 5395}, {"name": "Jooga", "mmr": 3795}, {"name": "Locke", "mmr": 5049}, {"name": "Keikari", "mmr": 4056}]}, {"id": "t1", "name": "Michael Bay Leffa", "avg": 4797, "players": [{"name": "jaasz", "mmr": 5430}, {"name": "WhaleHacker", "mmr": 6000}, {"name": "BurnIt", "mmr": 5471}, {"name": "quasmane", "mmr": 2831}, {"name": "Tot_Dog", "mmr": 4253}]}, {"id": "t2", "name": "Non Ordinary Power Essence", "avg": 3408, "players": [{"name": "Zigerik", "mmr": 4000}, {"name": "Wizkopa", "mmr": 3164}, {"name": "Raukilo", "mmr": 3367}, {"name": "Polarize", "mmr": 4083}, {"name": "Tedd1t", "mmr": 2425}]}, {"id": "t3", "name": "LXT DDF490Z", "avg": 4715, "players": [{"name": "fatko", "mmr": 3402}, {"name": "Jiri", "mmr": 4500}, {"name": "Morality", "mmr": 5250}, {"name": "Ade", "mmr": 5750}, {"name": "Waly", "mmr": 4674}]}, {"id": "t4", "name": "Mattirane volvo", "avg": 4560, "players": [{"name": "Morph", "mmr": 6750}, {"name": "Mattirane", "mmr": 6250}, {"name": "Muffa", "mmr": 4706}, {"name": "Hesber", "mmr": 3593}, {"name": "Sandimandi", "mmr": 1500}]}, {"id": "t5", "name": "Cherry Cherry Lady", "avg": 4344, "players": [{"name": "Tivi", "mmr": 4412}, {"name": "Baguettecat", "mmr": 4246}, {"name": "mangusti", "mmr": 3482}, {"name": "nonpu", "mmr": 3081}, {"name": "Pöykäri", "mmr": 6500}]}, {"id": "t6", "name": "KultaKalkkuna", "avg": 4774, "players": [{"name": "f0rtuna", "mmr": 6500}, {"name": "Jelo", "mmr": 3721}, {"name": "Miikkalele", "mmr": 5001}, {"name": "Satowi", "mmr": 6000}, {"name": "Mondi", "mmr": 2648}]}]}
+};
+const VALID=['S','A','B','C','D','pool'];
+let currentDiv='div1';
+let selectedId=null;
+let placements={};
+function data(){return DIVISIONS[currentDiv]}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function load(){placements={};try{const x=JSON.parse(localStorage.getItem(data().store)||'{}');if(x&&typeof x==='object')placements=x;}catch(e){}data().teams.forEach(t=>{if(!VALID.includes(placements[t.id]))placements[t.id]='pool';});}
+function save(){try{localStorage.setItem(data().store,JSON.stringify(placements));}catch(e){}}
+function fullCard(t){const el=document.createElement('div');el.className='team-card'+(selectedId===t.id?' selected':'');el.draggable=true;el.dataset.id=t.id;const ps=t.players.map(p=>`<span class="player"><strong>${esc(p.name)}</strong><span class="mmr">${p.mmr}</span></span>`).join('');el.innerHTML=`<div class="team-head"><div class="team-name">${esc(t.name)}</div><div class="avg">TOP 5 AVG ${t.avg}</div></div><div class="players">${ps}</div>`;bindTeam(el);return el;}
+function poolCard(t){const el=document.createElement('div');el.className='pool-team'+(selectedId===t.id?' selected':'');el.draggable=true;el.dataset.id=t.id;const ps=t.players.map(p=>`<span class="pool-player"><strong>${esc(p.name)}</strong><span class="mmr">${p.mmr}</span></span>`).join('');el.innerHTML=`<div class="pool-head"><div class="pool-name">${esc(t.name)}</div><div class="pool-avg">TOP 5 AVG ${t.avg}</div></div><div class="pool-players">${ps}</div>`;bindTeam(el);return el;}
+function bindTeam(el){el.addEventListener('dragstart',e=>{selectedId=el.dataset.id;e.dataTransfer.setData('text/plain',selectedId);e.dataTransfer.effectAllowed='move';el.classList.add('dragging');requestAnimationFrame(render);});el.addEventListener('dragend',()=>{document.querySelectorAll('.drop-active').forEach(x=>x.classList.remove('drop-active'));document.querySelectorAll('.dragging').forEach(x=>x.classList.remove('dragging'));});el.addEventListener('click',e=>{e.stopPropagation();selectedId=selectedId===el.dataset.id?null:el.dataset.id;render();});}
+function move(id,dest){if(!data().teams.some(t=>t.id===id)||!VALID.includes(dest))return;placements[id]=dest;selectedId=null;save();render();}
+function render(){document.getElementById('pageTitle').textContent=data().title;document.getElementById('div1Btn').classList.toggle('active',currentDiv==='div1');document.getElementById('div2Btn').classList.toggle('active',currentDiv==='div2');for(const tier of 'SABCD'){const z=document.querySelector(`[data-dropzone="${tier}"]`);z.innerHTML='';data().teams.filter(t=>placements[t.id]===tier).forEach(t=>z.appendChild(fullCard(t)));}const pool=document.getElementById('teamPool');pool.innerHTML='';const left=data().teams.filter(t=>placements[t.id]==='pool');left.forEach(t=>pool.appendChild(poolCard(t)));if(!left.length)pool.innerHTML='<div class="empty-hint">All teams placed</div>';document.getElementById('poolCount').textContent=`· ${left.length}/${data().teams.length}`;}
+function switchDivision(div){if(!DIVISIONS[div]||div===currentDiv)return;save();currentDiv=div;selectedId=null;load();render();}
+document.querySelectorAll('[data-dropzone]').forEach(z=>{z.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';z.closest('.tier-row,.pool-wrap')?.classList.add('drop-active');});z.addEventListener('dragleave',e=>{if(!z.contains(e.relatedTarget))z.closest('.tier-row,.pool-wrap')?.classList.remove('drop-active');});z.addEventListener('drop',e=>{e.preventDefault();z.closest('.tier-row,.pool-wrap')?.classList.remove('drop-active');move(e.dataTransfer.getData('text/plain'),z.dataset.dropzone);});z.addEventListener('click',()=>{if(selectedId)move(selectedId,z.dataset.dropzone);});});
+document.querySelectorAll('[data-tier-click]').forEach(x=>x.addEventListener('click',()=>{if(selectedId)move(selectedId,x.dataset.tierClick);}));
+document.getElementById('resetBtn').addEventListener('click',()=>{placements={};data().teams.forEach(t=>placements[t.id]='pool');selectedId=null;save();render();});
+document.getElementById('div1Btn').addEventListener('click',()=>switchDivision('div1'));
+document.getElementById('div2Btn').addEventListener('click',()=>switchDivision('div2'));
+load();render();
+(function(){const c=document.getElementById('embers'),x=c.getContext('2d'),N=40,p=[];function resize(){c.width=window.innerWidth;c.height=window.innerHeight}function s(o){const W=c.width,H=c.height,r=Math.random()<.7;o.x=r?W*.78+Math.random()*W*.2:Math.random()*W*.78;o.y=H+20+Math.random()*100;o.r=1+Math.random()*2.5;o.vy=.4+Math.random()*1.1;o.vx=(Math.random()-.5)*.4;o.ph=Math.random()*Math.PI*2;o.a=.3+Math.random()*.5;return o}resize();window.addEventListener('resize',resize);for(let i=0;i<N;i++){const o=s({});o.y=Math.random()*c.height;p.push(o)}let l=performance.now();function f(n){const d=Math.min((n-l)/16.7,3);l=n;x.clearRect(0,0,c.width,c.height);for(const o of p){o.y-=o.vy*d;o.ph+=.02*d;o.x+=(o.vx+Math.sin(o.ph)*.3)*d;if(o.y<-20)s(o);const fa=o.y<c.height*.28?Math.max(o.y/(c.height*.28),0):1;x.beginPath();x.arc(o.x,o.y,o.r,0,Math.PI*2);x.fillStyle='rgba(255,171,83,'+(o.a*fa).toFixed(3)+')';x.fill()}requestAnimationFrame(f)}requestAnimationFrame(f)})();
+</script>
+</body></html>
